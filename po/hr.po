@@ -1,0 +1,60 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: TrashGuard 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-20 12:00+0000\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: hr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "TrashGuard"
+msgstr "TrashGuard"
+
+msgid "Manage your trash size automatically"
+msgstr "Automatsko upravljanje veličinom smeća"
+
+msgid "Settings"
+msgstr "Postavke"
+
+msgid "Enable Automatic Cleaning"
+msgstr "Omogući automatsko čišćenje"
+
+msgid "Cleaning Mode"
+msgstr "Način čišćenja"
+
+msgid "Fixed Limit (GB)"
+msgstr "Fiksno ograničenje (GB)"
+
+msgid "Percentage of Free Space (%)"
+msgstr "Postotak slobodnog prostora (%)"
+
+msgid "Maximum Size"
+msgstr "Maksimalna veličina"
+
+msgid "Check Interval"
+msgstr "Interval provjere"
+
+msgid "Check Trash now"
+msgstr "Provjeri smeće sada"
+
+msgid "Hourly"
+msgstr "Svaki sat"
+
+msgid "Daily"
+msgstr "Svakodnevno"
+
+msgid "Weekly"
+msgstr "Tjedno"
+
+msgid "Current Trash Size:"
+msgstr "Trenutna veličina smeća:"
+
+msgid "Clean Now"
+msgstr "Očisti sada"
+
+msgid "Language"
+msgstr "Jezik"
