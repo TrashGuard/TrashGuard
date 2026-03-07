@@ -1,0 +1,26 @@
+msgid "Verfügbar"
+msgstr "Verfügbar"
+
+msgid "Sprache"
+msgstr "Sprache"
+
+msgid "Papierkorb-Dämon aktiv"
+msgstr "Papierkorb-Dämon aktiv"
+
+msgid "Prozent-Modus nutzen"
+msgstr "Prozent-Modus nutzen"
+
+msgid "Festplatten-Limit (GB)"
+msgstr "Festplatten-Limit (GB)"
+
+msgid "Festplatten-Limit (%)"
+msgstr "Festplatten-Limit (%)"
+
+msgid "Prüf-Intervall"
+msgstr "Prüf-Intervall"
+
+msgid "Ereignis-Log öffnen"
+msgstr "Ereignis-Log öffnen"
+
+msgid "Schutz deaktiviert!"
+msgstr "Papierkorb-Prüfung deaktiviert!"

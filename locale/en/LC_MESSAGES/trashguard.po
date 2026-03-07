@@ -1,0 +1,26 @@
+msgid "Verfügbar"
+msgstr "Available"
+
+msgid "Sprache"
+msgstr "Language"
+
+msgid "Papierkorb-Dämon aktiv"
+msgstr "Trash daemon active"
+
+msgid "Prozent-Modus nutzen"
+msgstr "Use percentage mode"
+
+msgid "Festplatten-Limit (GB)"
+msgstr "Disk limit (GB)"
+
+msgid "Festplatten-Limit (%)"
+msgstr "Disk limit (%)"
+
+msgid "Prüf-Intervall"
+msgstr "Check interval"
+
+msgid "Ereignis-Log öffnen"
+msgstr "Open event log"
+
+msgid "Schutz deaktiviert!"
+msgstr "Trash check disabled!"

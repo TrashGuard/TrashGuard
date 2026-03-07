@@ -1,0 +1,26 @@
+msgid "Verfügbar"
+msgstr "Dostupno"
+
+msgid "Sprache"
+msgstr "Jezik"
+
+msgid "Papierkorb-Dämon aktiv"
+msgstr "Provjera koša aktivna"
+
+msgid "Prozent-Modus nutzen"
+msgstr "Koristi postotak"
+
+msgid "Festplatten-Limit (GB)"
+msgstr "Limit diska (GB)"
+
+msgid "Festplatten-Limit (%)"
+msgstr "Limit diska (%)"
+
+msgid "Prüf-Intervall"
+msgstr "Interval provjere"
+
+msgid "Ereignis-Log öffnen"
+msgstr "Otvori log događaja"
+
+msgid "Schutz deaktiviert!"
+msgstr "Provjera koša deaktivirana!"

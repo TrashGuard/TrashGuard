@@ -1,0 +1,19 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Language"
+msgstr "Sprache"
+
+msgid "Free Space: {gb:.2f} GB"
+msgstr "Freier Speicher: {gb:.2f} GB"
+
+msgid "Check Trash now"
+msgstr "Papierkorb jetzt prüfen"
+
+msgid "Language changed"
+msgstr "Sprache geändert"
+
+msgid "Please restart the application to apply changes."
+msgstr "Bitte starte die Anwendung neu, um die Änderungen zu übernehmen."
