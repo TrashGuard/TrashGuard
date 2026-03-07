@@ -1,26 +1,61 @@
-msgid "Verfügbar"
-msgstr "Available"
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 
-msgid "Sprache"
+msgid "free_space"
+msgstr "Free Space (~/)"
+
+msgid "lang_title"
 msgstr "Language"
 
-msgid "Papierkorb-Dämon aktiv"
+msgid "daemon_title"
 msgstr "Trash daemon active"
 
-msgid "Prozent-Modus nutzen"
-msgstr "Use percentage mode"
+msgid "limit_gb_title"
+msgstr "Limit (Fixed GB)"
 
-msgid "Festplatten-Limit (GB)"
-msgstr "Disk limit (GB)"
+msgid "limit_pct_title"
+msgstr "Limit (Percent)"
 
-msgid "Festplatten-Limit (%)"
-msgstr "Disk limit (%)"
-
-msgid "Prüf-Intervall"
+msgid "interval_title"
 msgstr "Check interval"
 
-msgid "Ereignis-Log öffnen"
-msgstr "Open event log"
+msgid "strat_title"
+msgstr "Deletion priority"
 
-msgid "Schutz deaktiviert!"
-msgstr "Trash check disabled!"
+msgid "btn_log_title"
+msgstr "Show event log"
+
+msgid "restart_msg"
+msgstr "Please restart the program for the language change to take effect."
+
+msgid "daemon_warning"
+msgstr "Warning: The daemon is not active! Your trash will not be emptied automatically. Exit anyway?"
+
+msgid "info_title"
+msgstr "Information"
+
+msgid "legal_title"
+msgstr "Legal Notice"
+
+msgid "btn_close"
+msgstr "Close"
+
+msgid "btn_report"
+msgstr "Report a problem"
+
+msgid "help_lang"
+msgstr "Select your preferred language for the user interface."
+
+msgid "help_gb"
+msgstr "The trash will be emptied if it exceeds this fixed GB value."
+
+msgid "help_pct"
+msgstr "The trash will be emptied if it occupies this percentage of your disk."
+
+msgid "help_interval"
+msgstr "How often should the trash be checked in the background?"
+
+msgid "help_strat"
+msgstr "Decide whether to delete the oldest or the largest files first."

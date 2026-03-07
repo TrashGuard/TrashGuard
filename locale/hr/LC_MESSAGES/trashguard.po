@@ -1,26 +1,61 @@
-msgid "Verfügbar"
-msgstr "Dostupno"
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 
-msgid "Sprache"
+msgid "free_space"
+msgstr "Slobodan prostor (~/)"
+
+msgid "lang_title"
 msgstr "Jezik"
 
-msgid "Papierkorb-Dämon aktiv"
+msgid "daemon_title"
 msgstr "Provjera koša aktivna"
 
-msgid "Prozent-Modus nutzen"
-msgstr "Koristi postotak"
-
-msgid "Festplatten-Limit (GB)"
+msgid "limit_gb_title"
 msgstr "Limit diska (GB)"
 
-msgid "Festplatten-Limit (%)"
+msgid "limit_pct_title"
 msgstr "Limit diska (%)"
 
-msgid "Prüf-Intervall"
+msgid "interval_title"
 msgstr "Interval provjere"
 
-msgid "Ereignis-Log öffnen"
+msgid "strat_title"
+msgstr "Prioritet brisanja"
+
+msgid "btn_log_title"
 msgstr "Otvori log događaja"
 
-msgid "Schutz deaktiviert!"
-msgstr "Provjera koša deaktivirana!"
+msgid "restart_msg"
+msgstr "Molimo ponovno pokrenite program kako bi promjena jezika postala aktivna."
+
+msgid "daemon_warning"
+msgstr "Pažnja: Usluga nije aktivirana! Vaš koš se neće automatski prazniti. Ipak zatvoriti?"
+
+msgid "info_title"
+msgstr "Informacije"
+
+msgid "legal_title"
+msgstr "Pravna obavijest"
+
+msgid "btn_close"
+msgstr "Zatvori"
+
+msgid "btn_report"
+msgstr "Prijavi problem"
+
+msgid "help_lang"
+msgstr "Odaberite željeni jezik za korisničko sučelje."
+
+msgid "help_gb"
+msgstr "Fiksna vrijednost u GB. Ako se ta vrijednost premaši, smeće će se isprazniti."
+
+msgid "help_pct"
+msgstr "Postotak diska koji mora ostati slobodan prije čišćenja."
+
+msgid "help_interval"
+msgstr "Koliko često provjeravati koš u pozadini?"
+
+msgid "help_strat"
+msgstr "Odlučite hoće li se prvo brisati najstarije ili najveće datoteke."

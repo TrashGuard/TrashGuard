@@ -1,26 +1,61 @@
-msgid "Verfügbar"
-msgstr "Verfügbar"
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 
-msgid "Sprache"
+msgid "free_space"
+msgstr "Freier Speicher (~/)"
+
+msgid "lang_title"
 msgstr "Sprache"
 
-msgid "Papierkorb-Dämon aktiv"
+msgid "daemon_title"
 msgstr "Papierkorb-Dämon aktiv"
 
-msgid "Prozent-Modus nutzen"
-msgstr "Prozent-Modus nutzen"
+msgid "limit_gb_title"
+msgstr "Limit (Festwert GB)"
 
-msgid "Festplatten-Limit (GB)"
-msgstr "Festplatten-Limit (GB)"
+msgid "limit_pct_title"
+msgstr "Limit (Prozent)"
 
-msgid "Festplatten-Limit (%)"
-msgstr "Festplatten-Limit (%)"
-
-msgid "Prüf-Intervall"
+msgid "interval_title"
 msgstr "Prüf-Intervall"
 
-msgid "Ereignis-Log öffnen"
-msgstr "Ereignis-Log öffnen"
+msgid "strat_title"
+msgstr "Lösch-Priorität"
 
-msgid "Schutz deaktiviert!"
-msgstr "Papierkorb-Prüfung deaktiviert!"
+msgid "btn_log_title"
+msgstr "Protokoll (Log) anzeigen"
+
+msgid "restart_msg"
+msgstr "Bitte starte das Programm neu, damit die Sprachänderung aktiv wird."
+
+msgid "daemon_warning"
+msgstr "Warnung: Der Dämon ist nicht aktiv! Dein Papierkorb wird nicht automatisch geleert. Trotzdem beenden?"
+
+msgid "info_title"
+msgstr "Informationen"
+
+msgid "legal_title"
+msgstr "Rechtshinweis"
+
+msgid "btn_close"
+msgstr "Schließen"
+
+msgid "btn_report"
+msgstr "Ein Problem melden"
+
+msgid "help_lang"
+msgstr "Wähle deine bevorzugte Sprache für die Benutzeroberfläche."
+
+msgid "help_gb"
+msgstr "Der Papierkorb wird geleert, wenn er diesen festen GB-Wert überschreitet."
+
+msgid "help_pct"
+msgstr "Der Papierkorb wird geleert, wenn er diesen Prozentsatz deiner Festplatte belegt."
+
+msgid "help_interval"
+msgstr "Wie oft soll im Hintergrund geprüft werden, ob der Papierkorb zu voll ist?"
+
+msgid "help_strat"
+msgstr "Entscheide, ob zuerst die ältesten oder die größten Dateien gelöscht werden sollen."
