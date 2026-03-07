@@ -205,3 +205,7 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+nohup.out
+__pycache__/
+*.pyc
+.directory

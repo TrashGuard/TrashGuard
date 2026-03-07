@@ -39,6 +39,9 @@ msgstr "Informacije"
 msgid "legal_title"
 msgstr "Pravna obavijest"
 
+msgid "legal_text"
+msgstr "<span size='large' weight='bold'>Open Source Software</span>\n\nOvaj program je slobodan softver pod GPLv3 licencom.\nMože se dijeliti i modificirati.\n\nRazvio s ❤️ Mario Dejanović"
+
 msgid "btn_close"
 msgstr "Zatvori"
 
@@ -59,3 +62,15 @@ msgstr "Koliko često provjeravati koš u pozadini?"
 
 msgid "help_strat"
 msgstr "Odlučite hoće li se prvo brisati najstarije ili najveće datoteke."
+
+msgid "warn_title"
+msgstr "Zaštita je isključena"
+
+msgid "warn_body"
+msgstr "Servis za čišćenje je isključen. TrashGuard neće automatski čistiti vaš prostor. Ipak želite zatvoriti?"
+
+msgid "warn_cancel"
+msgstr "Odustani"
+
+msgid "warn_confirm"
+msgstr "Zatvori"

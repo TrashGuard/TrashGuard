@@ -39,6 +39,9 @@ msgstr "Information"
 msgid "legal_title"
 msgstr "Legal Notice"
 
+msgid "legal_text"
+msgstr "<span size='large' weight='bold'>Open Source Software</span>\n\nThis program is free software under the GPLv3 license.\nIt may be shared and modified.\n\nDeveloped with ❤️ by Mario Dejanović"
+
 msgid "btn_close"
 msgstr "Close"
 
@@ -59,3 +62,15 @@ msgstr "How often should the trash be checked in the background?"
 
 msgid "help_strat"
 msgstr "Decide whether to delete the oldest or the largest files first."
+
+msgid "warn_title"
+msgstr "Protection Disabled"
+
+msgid "warn_body"
+msgstr "The trash daemon is currently switched off. TrashGuard will not automatically clean up your storage. Do you still want to exit?"
+
+msgid "warn_cancel"
+msgstr "Cancel"
+
+msgid "warn_confirm"
+msgstr "Exit"

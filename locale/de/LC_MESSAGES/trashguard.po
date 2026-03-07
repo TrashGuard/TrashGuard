@@ -39,6 +39,9 @@ msgstr "Informationen"
 msgid "legal_title"
 msgstr "Rechtshinweis"
 
+msgid "legal_text"
+msgstr "<span size='large' weight='bold'>Open Source Software</span>\n\nDieses Programm ist freie Software unter der GPLv3-Lizenz.\nEs darf geteilt und modifiziert werden.\n\nEntwickelt mit ❤️ von Mario Dejanović"
+
 msgid "btn_close"
 msgstr "Schließen"
 
@@ -59,3 +62,15 @@ msgstr "Wie oft soll im Hintergrund geprüft werden, ob der Papierkorb zu voll i
 
 msgid "help_strat"
 msgstr "Entscheide, ob zuerst die ältesten oder die größten Dateien gelöscht werden sollen."
+
+msgid "warn_title"
+msgstr "Schutz deaktiviert"
+
+msgid "warn_body"
+msgstr "Der Papierkorb-Dämon ist ausgeschaltet. TrashGuard wird Ihren Speicherplatz nicht automatisch bereinigen. Trotzdem beenden?"
+
+msgid "warn_cancel"
+msgstr "Abbrechen"
+
+msgid "warn_confirm"
+msgstr "Beenden"
