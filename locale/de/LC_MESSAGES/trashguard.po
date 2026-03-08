@@ -89,3 +89,6 @@ msgstr "Daemon Status"
 
 msgid "log_cleaning_title"
 msgstr "Lösch-Protokoll"
+
+msgid "trash_size"
+msgstr "Papierkorb Größe"

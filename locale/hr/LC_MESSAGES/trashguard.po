@@ -89,3 +89,6 @@ msgstr "Status Daemona"
 
 msgid "log_cleaning_title"
 msgstr "Zapisnik brisanja"
+
+msgid "trash_size"
+msgstr "Veličina smeća"
