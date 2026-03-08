@@ -54,7 +54,8 @@ class TrashGuardApp(Adw.Application):
         daemon_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "TrashGuard.py")
         if should_run and not is_running and os.path.exists(daemon_script):
             try:
-                proc = subprocess.Popen(["python3", daemon_script])
+                # Hier wurde das --daemon Flag hinzugefügt
+                proc = subprocess.Popen(["python3", daemon_script, "--daemon"])
                 with open(self.pid_file, "w") as f: f.write(str(proc.pid))
             except: pass
         elif not should_run and is_running:
@@ -77,6 +78,18 @@ class TrashGuardApp(Adw.Application):
             el.install()
             self._ = el.gettext
         except: self._ = lambda s: s
+
+    def get_trash_size(self):
+        """Berechnet die aktuelle Größe des Papierkorbs in GB."""
+        trash_path = os.path.expanduser("~/.local/share/Trash/files")
+        total_size = 0
+        if os.path.exists(trash_path):
+            for dirpath, dirnames, filenames in os.walk(trash_path):
+                for f in filenames:
+                    fp = os.path.join(dirpath, f)
+                    if not os.path.islink(fp):
+                        total_size += os.path.getsize(fp)
+        return total_size / (1024**3)
 
     def on_activate(self, app):
         self.update_translation()
@@ -120,6 +133,7 @@ class TrashGuardApp(Adw.Application):
 
         usage = shutil.disk_usage(os.path.expanduser("~"))
         self.free_gb_now = usage.free / (1024**3)
+        self.trash_gb_now = self.get_trash_size()
 
         group_base = Adw.PreferencesGroup()
         page.add(group_base)
@@ -137,7 +151,9 @@ class TrashGuardApp(Adw.Application):
         self.service_switch.connect("notify::active", self.on_daemon_toggled)
         group_base.add(self.service_switch)
 
-        group_limit = Adw.PreferencesGroup(title="Limit-Modus", description=f"{self._('free_space')}: {self.free_gb_now:.2f} GB")
+        # Beschreibung aktualisiert: Freier Speicher und Papierkorbgröße
+        limit_desc = f"{self._('free_space')}: {self.free_gb_now:.2f} GB | {self._('trash_size')}: {self.trash_gb_now:.2f} GB"
+        group_limit = Adw.PreferencesGroup(title="Limit-Modus", description=limit_desc)
         page.add(group_limit)
 
         self.fixed_check_row = Adw.SwitchRow(title=self._("check_fixed_title"))
@@ -211,7 +227,6 @@ class TrashGuardApp(Adw.Application):
         
         stack = Adw.ViewStack()
         
-        # Geänderte Logik für die Tab-Beschriftungen mit Übersetzungs-IDs
         log_configs = [
             (self._("log_daemon_title"), self.daemon_log),
             (self._("log_cleaning_title"), self.cleaning_log)
@@ -238,7 +253,6 @@ class TrashGuardApp(Adw.Application):
         box.append(switcher)
         box.append(stack)
 
-        # Der Schließen-Button nutzt jetzt die ID "btn_close"
         close_btn = Gtk.Button(label=self._("btn_close"))
         close_btn.set_halign(Gtk.Align.CENTER)
         close_btn.add_css_class("suggested-action")
@@ -251,29 +265,42 @@ class TrashGuardApp(Adw.Application):
 
     def on_daemon_toggled(self, row, pspec):
         active = row.get_active()
+        
+        # 1. Einstellung speichern
         self.on_config_changed()
-        autostart_dir = os.path.expanduser("~/.config/autostart")
-        autostart_file = os.path.join(autostart_dir, "com.dejanovic.trashguard.daemon.desktop")
+        
+        # 2. Pfad zum Dämon-Skript ermitteln
         daemon_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "TrashGuard.py")
+        
+        # 3. Den Autostart-Handler rufen (Portal-Logik)
+        try:
+            from autostart_handler import AutostartManager
+            AutostartManager.set_autostart(active)
+        except ImportError:
+            print("Fehler: autostart_handler.py nicht im Verzeichnis!")
 
+        # 4. Den Prozess sofort starten oder stoppen
         if active:
-            os.makedirs(autostart_dir, exist_ok=True)
-            with open(autostart_file, "w") as f:
-                f.write(f"[Desktop Entry]\nType=Application\nName=TrashGuard Daemon\n"
-                        f"Exec=python3 {daemon_script}\n"
-                        f"Hidden=false\nNoDisplay=false\nX-GNOME-Autostart-enabled=true\n")
             if not self.is_daemon_running() and os.path.exists(daemon_script):
-                proc = subprocess.Popen(["python3", daemon_script])
-                with open(self.pid_file, "w") as f: f.write(str(proc.pid))
+                try:
+                    # HINZUGEFÜGT: Das "--daemon" Flag
+                    proc = subprocess.Popen(["python3", daemon_script, "--daemon"])
+                    with open(self.pid_file, "w") as f: 
+                        f.write(str(proc.pid))
+                except Exception as e:
+                    print(f"Fehler beim Starten des Prozesses: {e}")
         else:
-            if os.path.exists(autostart_file): os.remove(autostart_file)
+            # Dämon stoppen via PID
             if os.path.exists(self.pid_file):
                 try:
-                    with open(self.pid_file, "r") as f: pid = int(f.read().strip())
-                    os.kill(pid, 15)
-                except: pass
+                    with open(self.pid_file, "r") as f: 
+                        pid = int(f.read().strip())
+                    os.kill(pid, 15) # SIGTERM senden
+                except: 
+                    pass
                 finally:
-                    if os.path.exists(self.pid_file): os.remove(self.pid_file)
+                    if os.path.exists(self.pid_file): 
+                        os.remove(self.pid_file)
 
     def show_about(self, btn):
         dialog = Adw.MessageDialog(transient_for=self.win, heading=self._("legal_title"))
