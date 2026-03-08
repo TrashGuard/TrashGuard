@@ -12,6 +12,9 @@ msgstr "Sprache"
 msgid "daemon_title"
 msgstr "Papierkorb-Dämon aktiv"
 
+msgid "help_daemon"
+msgstr "Aktiviert den Hintergrunddienst, der den Papierkorb automatisch nach deinen Regeln leert."
+
 msgid "limit_gb_title"
 msgstr "Limit (Festwert GB)"
 
@@ -23,15 +26,6 @@ msgstr "Prüf-Intervall"
 
 msgid "strat_title"
 msgstr "Lösch-Priorität"
-
-msgid "btn_log_title"
-msgstr "Protokoll (Log) anzeigen"
-
-msgid "restart_msg"
-msgstr "Bitte starte das Programm neu, damit die Sprachänderung aktiv wird."
-
-msgid "daemon_warning"
-msgstr "Warnung: Der Dämon ist nicht aktiv! Dein Papierkorb wird nicht automatisch geleert. Trotzdem beenden?"
 
 msgid "info_title"
 msgstr "Informationen"
@@ -51,11 +45,11 @@ msgstr "Ein Problem melden"
 msgid "help_lang"
 msgstr "Wähle deine bevorzugte Sprache für die Benutzeroberfläche."
 
-msgid "help_gb"
-msgstr "Der Papierkorb wird geleert, wenn er diesen festen GB-Wert überschreitet."
+msgid "help_fixed_mode"
+msgstr "Der Papierkorb wird immer bei der exakten GB-Grenze bereinigt, egal wie viel Platz sonst auf der Platte ist."
 
-msgid "help_pct"
-msgstr "Der Papierkorb wird geleert, wenn er diesen Prozentsatz deiner Festplatte belegt."
+msgid "help_dynamic_mode"
+msgstr "Das Limit passt sich automatisch an. Wenn die Festplatte voller wird, wird auch der erlaubte Platz für den Müll kleiner."
 
 msgid "help_interval"
 msgstr "Wie oft soll im Hintergrund geprüft werden, ob der Papierkorb zu voll ist?"
@@ -74,3 +68,24 @@ msgstr "Abbrechen"
 
 msgid "warn_confirm"
 msgstr "Beenden"
+
+msgid "check_fixed_title"
+msgstr "Fixen GB-Wert nutzen"
+
+msgid "check_dynamic_title"
+msgstr "Dynamisches Prozent-Limit"
+
+msgid "strat_oldest"
+msgstr "Älteste zuerst"
+
+msgid "strat_biggest"
+msgstr "Größte zuerst"
+
+msgid "strat_random"
+msgstr "Zufällig"
+
+msgid "log_daemon_title"
+msgstr "Daemon Status"
+
+msgid "log_cleaning_title"
+msgstr "Lösch-Protokoll"

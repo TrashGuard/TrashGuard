@@ -1,284 +1,370 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-import sys, os, gi, json, gettext, shutil, subprocess
+import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
-from gi.repository import Gtk, Adw, Gio
-
-# --- KONFIGURATION ---
-MY_NAME = "Mario Dejanović"
-MY_EMAIL = "trashguard@alpenjodel.de"
-LOG_FILE = os.path.expanduser("~/.config/trashguard/trashguard_log.txt")
-CONFIG_FILE = os.path.expanduser("~/.config/trashguard/config.json")
-
-# --- LOKALISIERUNG ---
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-BASE_DIR = os.path.dirname(SCRIPT_DIR)
-LOCALE_DIR = os.path.join(BASE_DIR, 'locale')
+from gi.repository import Gtk, Adw, Gio, GLib, Gdk
+import json
+import os
+import gettext
+import sys
+import shutil
+import webbrowser
+import subprocess
 
 class TrashGuardApp(Adw.Application):
-    def __init__(self):
-        super().__init__(application_id="com.oluja.trashguard")
-        self.connect("activate", self.on_activate)
-        self.settings_path = CONFIG_FILE
-        self.load_settings()
-        self.lang_map = ["de", "en", "hr"]
-        self.update_translation()
-        self.is_loading = True
+    def __init__(self, **kwargs):
+        super().__init__(application_id='com.dejanovic.trashguard', **kwargs)
+        self.config_dir = os.path.expanduser("~/.config/trashguard")
+        self.config_path = os.path.join(self.config_dir, "config.json")
+        self.pid_file = os.path.join(self.config_dir, "daemon.pid")
+        
+        # Logfile Pfade
+        self.daemon_log = os.path.join(self.config_dir, "trashguard_daemon_log.txt")
+        self.cleaning_log = os.path.join(self.config_dir, "trashguard_cleaning_log.txt")
+        
+        self.load_config()
+        self.sync_daemon_status()
+        self.connect('activate', self.on_activate)
 
-    def get_free_space(self):
-        total, used, free = shutil.disk_usage(os.path.expanduser("~"))
-        return free / (1024**3)
-
-    def load_settings(self):
-        if os.path.exists(self.settings_path):
-            try:
-                with open(self.settings_path, "r", encoding="utf-8") as f:
-                    self.settings = json.load(f)
-            except:
-                self.set_default_settings()
-        else:
-            self.set_default_settings()
-
-    def set_default_settings(self):
-        self.settings = {
-            "service_enabled": False, "interval_idx": 1, 
-            "fixed_gb_val": 2.0, "percent_val": 10, 
-            "del_strategy_idx": 0, "language_code": "de"
+    def load_config(self):
+        self.config = {
+            "language": "de", "service_enabled": False,
+            "fixed_gb_val": 2.0, "percent_val": 10,
+            "interval_idx": 1, "del_strategy_idx": 0, "use_fixed": True,
+            "window_width": 450, "window_height": 850
         }
+        if os.path.exists(self.config_path):
+            try:
+                with open(self.config_path, "r") as f:
+                    self.config.update(json.load(f))
+            except: pass
 
-    def update_translation(self):
-        lang_code = self.settings.get("language_code", "de")
-        try:
-            lang = gettext.translation('trashguard', localedir=LOCALE_DIR, languages=[lang_code])
-            self.t = lang.gettext
-        except Exception:
-            self.t = lambda s: s
-
-    def open_logfile(self, btn):
-        for editor in ["cosmic-edit", "gnome-text-editor", "gedit", "mousepad", "xdg-open"]:
-            if shutil.which(editor):
-                subprocess.Popen([editor, LOG_FILE])
-                return
-
-    def create_help_btn(self, msg_id):
-        btn = Gtk.Button.new_from_icon_name("help-info-symbolic")
-        btn.add_css_class("flat")
-        def on_clicked(b):
-            popover = Gtk.Popover()
-            label = Gtk.Label(label=self.t(msg_id), max_width_chars=35, wrap=True)
-            label.set_margin_top(10); label.set_margin_bottom(10)
-            label.set_margin_start(10); label.set_margin_end(10)
-            popover.set_child(label)
-            popover.set_parent(b)
-            popover.popup()
-        btn.connect("clicked", on_clicked)
-        return btn
-
-    def show_legal(self, btn):
-        legal = Gtk.Window(transient_for=self.win, modal=True, resizable=False, title=self.t("legal_title"))
-        legal.set_default_size(350, 250)
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=15)
-        box.set_margin_top(20); box.set_margin_bottom(20)
-        box.set_margin_start(20); box.set_margin_end(20)
-        label = Gtk.Label(wrap=True, justify=Gtk.Justification.CENTER)
-        label.set_markup(self.t("legal_text"))
-        close_btn = Gtk.Button(label=self.t("btn_close"))
-        close_btn.connect("clicked", lambda x: legal.destroy())
-        box.append(label); box.append(close_btn)
-        legal.set_child(box)
-        legal.present()
-
-    def show_about_custom(self, btn):
-        about = Gtk.Window(transient_for=self.win, modal=True, resizable=False, title=self.t("info_title"))
-        about.set_default_size(320, 500)
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=15)
-        box.set_margin_top(30); box.set_margin_bottom(30)
-        box.set_margin_start(30); box.set_margin_end(30)
-        img = Gtk.Image.new_from_icon_name("user-trash-full-symbolic")
-        img.set_pixel_size(96)
-        title = Gtk.Label(label="TrashGuard", css_classes=["title-1"])
-        author = Gtk.Label(label=f"{MY_NAME}\nVersion 2.9.7", justify=Gtk.Justification.CENTER)
-        legal_btn = Gtk.Button(label=self.t("legal_title"))
-        legal_btn.connect("clicked", self.show_legal)
-        bug_btn = Gtk.Button(label=self.t("btn_report"))
-        bug_btn.connect("clicked", lambda x: subprocess.run(["xdg-open", f"mailto:{MY_EMAIL}"]))
-        close_btn = Gtk.Button(label=self.t("btn_close"))
-        close_btn.connect("clicked", lambda x: about.destroy())
-        box.append(img); box.append(title); box.append(author); box.append(legal_btn); box.append(bug_btn); box.append(close_btn)
-        about.set_child(box)
-        about.present()
-
-    def on_activate(self, app):
-        self.win = Adw.ApplicationWindow(application=self, title="TrashGuard", default_width=450)
-        
-        # NEU: Warnmeldung beim Schließen, falls Service aus ist
-        self.win.connect("close-request", self.on_close_request)
-
-        main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        header = Adw.HeaderBar()
-        info_btn = Gtk.Button.new_from_icon_name("help-about-symbolic")
-        info_btn.connect("clicked", self.show_about_custom)
-        header.pack_start(info_btn)
-        main_box.append(header)
-
-        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
-        content.set_margin_top(15); content.set_margin_bottom(15)
-        content.set_margin_start(15); content.set_margin_end(15)
-
-        self.free_label = Gtk.Label(xalign=0, css_classes=["caption"])
-        content.append(self.free_label)
-
-        # UI Reihen
-        self.lang_row = Adw.ActionRow()
-        self.lang_drop = Gtk.DropDown.new_from_strings(["Deutsch", "English", "Hrvatski"])
-        self.lang_drop.connect("notify::selected", self.on_lang_changed)
-        self.lang_row.add_suffix(self.lang_drop)
-        self.lang_row.add_prefix(self.create_help_btn("help_lang"))
-
-        self.daemon_row = Adw.ActionRow()
-        self.daemon_switch = Gtk.Switch(valign=Gtk.Align.CENTER)
-        self.daemon_switch.connect("notify::active", self.on_generic_change)
-        self.daemon_row.add_suffix(self.daemon_switch)
-
-        self.gb_row = Adw.ActionRow()
-        self.gb_spin = Gtk.SpinButton.new_with_range(0.1, 100.0, 0.1)
-        self.gb_spin.connect("value-changed", self.on_gb_changed)
-        self.gb_row.add_suffix(self.gb_spin)
-        self.gb_row.add_prefix(self.create_help_btn("help_gb"))
-
-        self.pct_row = Adw.ActionRow()
-        pct_box = Gtk.Box(spacing=10)
-        self.pct_scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 1, 50, 1)
-        self.pct_scale.set_hexpand(True)
-        self.pct_scale.set_size_request(200, -1)
-        self.pct_label = Gtk.Label()
-        self.pct_scale.connect("value-changed", self.on_pct_changed)
-        pct_box.append(self.pct_scale); pct_box.append(self.pct_label)
-        self.pct_row.add_suffix(pct_box)
-        self.pct_row.add_prefix(self.create_help_btn("help_pct"))
-
-        self.int_row = Adw.ActionRow()
-        self.int_drop = Gtk.DropDown.new_from_strings(["30 Min", "1 Std", "24 Std", "7 Tage"])
-        self.int_drop.connect("notify::selected", self.on_generic_change)
-        self.int_row.add_suffix(self.int_drop)
-        self.int_row.add_prefix(self.create_help_btn("help_interval"))
-
-        self.strat_row = Adw.ActionRow()
-        self.strat_drop = Gtk.DropDown.new_from_strings(["Oldest", "Biggest", "Random"])
-        self.strat_drop.connect("notify::selected", self.on_generic_change)
-        self.strat_row.add_suffix(self.strat_drop)
-        self.strat_row.add_prefix(self.create_help_btn("help_strat"))
-
-        for r in [self.lang_row, self.daemon_row]:
-            lb = Gtk.ListBox(css_classes=["boxed-list"], margin_bottom=5); lb.append(r); content.append(lb)
-        
-        lb_limits = Gtk.ListBox(css_classes=["boxed-list"], margin_bottom=5)
-        lb_limits.append(self.gb_row); lb_limits.append(self.pct_row); content.append(lb_limits)
-
-        lb_extra = Gtk.ListBox(css_classes=["boxed-list"], margin_bottom=5)
-        lb_extra.append(self.int_row); lb_extra.append(self.strat_row); content.append(lb_extra)
-
-        self.log_btn = Gtk.Button(css_classes=["suggested-action", "pill"])
-        self.log_btn.connect("clicked", self.open_logfile)
-        content.append(self.log_btn)
-
-        main_box.append(content)
-        self.win.set_content(main_box)
-        self.is_loading = False
-        self.load_ui_values()
-        self.refresh_ui_labels()
-        self.win.present()
-
-    def on_close_request(self, window):
-        # Wenn der Switch aus ist, zeige Warnung
-        if not self.daemon_switch.get_active():
-            dialog = Adw.MessageDialog(
-                transient_for=self.win,
-                heading=self.t("warn_title"),
-                body=self.t("warn_body")
-            )
-            dialog.add_response("cancel", self.t("warn_cancel"))
-            dialog.add_response("close", self.t("warn_confirm"))
-            dialog.set_response_appearance("close", Adw.ResponseAppearance.DESTRUCTIVE)
-            
-            def on_response(d, response):
-                if response == "close":
-                    self.quit()
-                d.destroy()
-            
-            dialog.connect("response", on_response)
-            dialog.present()
-            return True # Verhindert das sofortige Schließen
+    def is_daemon_running(self):
+        if os.path.exists(self.pid_file):
+            try:
+                with open(self.pid_file, "r") as f:
+                    pid = int(f.read().strip())
+                os.kill(pid, 0)
+                return True
+            except: return False
         return False
 
-    def on_lang_changed(self, widget, pspec):
-        if self.is_loading: return
-        self.settings["language_code"] = self.lang_map[widget.get_selected()]
+    def sync_daemon_status(self):
+        should_run = self.config.get("service_enabled", False)
+        is_running = self.is_daemon_running()
+        daemon_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "TrashGuard.py")
+        if should_run and not is_running and os.path.exists(daemon_script):
+            try:
+                proc = subprocess.Popen(["python3", daemon_script])
+                with open(self.pid_file, "w") as f: f.write(str(proc.pid))
+            except: pass
+        elif not should_run and is_running:
+            try:
+                with open(self.pid_file, "r") as f: pid = int(f.read().strip())
+                os.kill(pid, 15)
+                if os.path.exists(self.pid_file): os.remove(self.pid_file)
+            except: pass
+
+    def save_config(self):
+        os.makedirs(self.config_dir, exist_ok=True)
+        with open(self.config_path, "w") as f: json.dump(self.config, f, indent=4)
+
+    def update_translation(self):
+        lang = self.config.get("language", "de")
+        os.environ['LANGUAGE'] = lang
+        locale_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'locale')
+        try:
+            el = gettext.translation('trashguard', locale_dir, languages=[lang], fallback=True)
+            el.install()
+            self._ = el.gettext
+        except: self._ = lambda s: s
+
+    def on_activate(self, app):
         self.update_translation()
-        self.refresh_ui_labels()
-        self.save_settings()
+        GLib.set_prgname('com.dejanovic.trashguard')
+        GLib.set_application_name("TrashGuard")
+        
+        self.win = Adw.ApplicationWindow(application=app, title="TrashGuard")
+        
+        width = self.config.get("window_width", 450)
+        height = self.config.get("window_height", 850)
+        
+        self.win.set_size_request(-1, 850)
+        self.win.set_default_size(width, height)
+        
+        self.win.connect("close-request", self.on_close_requested)
 
-    def on_gb_changed(self, spin):
-        if self.is_loading: return
-        self.is_loading = True
-        val_gb = spin.get_value()
-        pct = (val_gb / self.get_free_space()) * 100
-        val_pct = min(int(pct), 50)
-        self.pct_scale.set_value(val_pct)
-        self.pct_label.set_label(f"{val_pct} %")
-        self.is_loading = False
-        self.save_settings()
+        self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.win.set_content(self.main_box)
+        self.build_ui()
+        self.win.present()
 
-    def on_pct_changed(self, scale):
-        val_pct = int(scale.get_value())
-        self.pct_label.set_label(f"{val_pct} %")
-        if self.is_loading: return
-        self.is_loading = True
-        new_gb = (val_pct / 100) * self.get_free_space()
-        self.gb_spin.set_value(round(new_gb, 2))
-        self.is_loading = False
-        self.save_settings()
+    def build_ui(self):
+        child = self.main_box.get_first_child()
+        while child:
+            self.main_box.remove(child)
+            child = self.main_box.get_first_child()
 
-    def load_ui_values(self):
-        self.is_loading = True
-        s = self.settings
-        self.lang_drop.set_selected(self.lang_map.index(s.get("language_code", "de")))
-        self.daemon_switch.set_active(s.get("service_enabled", False))
-        self.gb_spin.set_value(s.get("fixed_gb_val", 2.0))
-        self.pct_scale.set_value(s.get("percent_val", 10))
-        self.pct_label.set_label(f"{int(self.pct_scale.get_value())} %")
-        self.int_drop.set_selected(s.get("interval_idx", 1))
-        self.strat_drop.set_selected(s.get("del_strategy_idx", 0))
-        self.is_loading = False
+        header = Adw.HeaderBar()
+        self.log_btn = Gtk.Button(label="Logfiles")
+        self.log_btn.connect("clicked", self.on_show_logs)
+        header.pack_start(self.log_btn)
 
-    def refresh_ui_labels(self):
-        t = self.t
-        self.free_label.set_label(f"{t('free_space')}: {self.get_free_space():.2f} GB")
-        self.lang_row.set_title(t("lang_title"))
-        self.daemon_row.set_title(t("daemon_title"))
-        self.gb_row.set_title(t("limit_gb_title"))
-        self.pct_row.set_title(t("limit_pct_title"))
-        self.int_row.set_title(t("interval_title"))
-        self.strat_row.set_title(t("strat_title"))
-        self.log_btn.set_label(t("btn_log_title"))
+        about_btn = Gtk.Button.new_from_icon_name("dialog-information-symbolic")
+        about_btn.connect("clicked", self.show_about)
+        header.pack_end(about_btn)
+        self.main_box.append(header)
 
-    def on_generic_change(self, *args):
-        if not self.is_loading: self.save_settings()
+        page = Adw.PreferencesPage()
+        page.set_vexpand(True)
+        self.main_box.append(page)
 
-    def save_settings(self):
-        self.settings.update({
-            "service_enabled": self.daemon_switch.get_active(),
-            "interval_idx": self.int_drop.get_selected(),
+        usage = shutil.disk_usage(os.path.expanduser("~"))
+        self.free_gb_now = usage.free / (1024**3)
+
+        group_base = Adw.PreferencesGroup()
+        page.add(group_base)
+
+        self.lang_row = Adw.ComboRow(title=self._("lang_title"))
+        self.lang_row.set_subtitle(self._("help_lang"))
+        self.lang_row.set_model(Gtk.StringList.new(["Deutsch", "English", "HR / SRB / BIH"]))
+        self.lang_row.set_selected({"de":0, "en":1, "hr":2}.get(self.config["language"], 0))
+        self.lang_row.connect("notify::selected", self.on_language_changed)
+        group_base.add(self.lang_row)
+
+        self.service_switch = Adw.SwitchRow(title=self._("daemon_title"))
+        self.service_switch.set_subtitle(self._("help_daemon"))
+        self.service_switch.set_active(self.config["service_enabled"])
+        self.service_switch.connect("notify::active", self.on_daemon_toggled)
+        group_base.add(self.service_switch)
+
+        group_limit = Adw.PreferencesGroup(title="Limit-Modus", description=f"{self._('free_space')}: {self.free_gb_now:.2f} GB")
+        page.add(group_limit)
+
+        self.fixed_check_row = Adw.SwitchRow(title=self._("check_fixed_title"))
+        self.fixed_check_row.set_subtitle(self._("help_fixed_mode"))
+        self.fixed_check_row.set_active(self.config["use_fixed"])
+        self.fixed_check_row.connect("notify::active", self.on_mode_toggled, "fixed")
+        group_limit.add(self.fixed_check_row)
+
+        self.fixed_val_row = Adw.ActionRow(title=self._("limit_gb_title"))
+        self.gb_spin = Gtk.SpinButton.new_with_range(0.1, self.free_gb_now, 0.1)
+        self.gb_spin.set_value(min(self.config["fixed_gb_val"], self.free_gb_now))
+        self.gb_spin.connect("value-changed", self.sync_from_gb)
+        self.fixed_val_row.add_suffix(self.gb_spin)
+        group_limit.add(self.fixed_val_row)
+
+        self.dyn_check_row = Adw.SwitchRow(title=self._("check_dynamic_title"))
+        self.dyn_check_row.set_subtitle(self._("help_dynamic_mode"))
+        self.dyn_check_row.set_active(not self.config["use_fixed"])
+        self.dyn_check_row.connect("notify::active", self.on_mode_toggled, "dyn")
+        group_limit.add(self.dyn_check_row)
+
+        self.dyn_val_row = Adw.ActionRow(title=self._("limit_pct_title"))
+        self.pct_scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 1, 50, 1)
+        self.pct_scale.set_value(min(self.config["percent_val"], 50))
+        self.pct_scale.set_hexpand(True)
+        self.pct_scale.connect("value-changed", self.sync_from_pct)
+        self.pct_label = Gtk.Label(label=f"{int(self.pct_scale.get_value())}%")
+        scale_box = Gtk.Box(spacing=10); scale_box.append(self.pct_scale); scale_box.append(self.pct_label)
+        self.dyn_val_row.add_suffix(scale_box)
+        group_limit.add(self.dyn_val_row)
+
+        group_run = Adw.PreferencesGroup()
+        page.add(group_run)
+
+        self.interval_row = Adw.ComboRow(title=self._("interval_title"))
+        self.interval_row.set_subtitle(self._("help_interval"))
+        self.interval_row.set_model(Gtk.StringList.new(["30 min", "1 h", "24 h", "7 d"]))
+        self.interval_row.set_selected(self.config["interval_idx"])
+        self.interval_row.connect("notify::selected", self.on_config_changed)
+        group_run.add(self.interval_row)
+
+        self.strategy_row = Adw.ComboRow(title=self._("strat_title"))
+        self.strategy_row.set_subtitle(self._("help_strat"))
+        self.strategy_row.set_model(Gtk.StringList.new([self._("strat_oldest"), self._("strat_biggest"), self._("strat_random")]))
+        self.strategy_row.set_selected(self.config["del_strategy_idx"])
+        self.strategy_row.connect("notify::selected", self.on_config_changed)
+        group_run.add(self.strategy_row)
+
+        logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Slavic_by_nature.svg")
+        if os.path.exists(logo_path):
+            footer_group = Adw.PreferencesGroup()
+            logo_img = Gtk.Image.new_from_file(logo_path)
+            logo_img.set_pixel_size(80)
+            logo_img.set_margin_top(20)
+            logo_img.set_margin_bottom(40)
+            logo_img.set_opacity(0.3)
+            footer_group.add(logo_img)
+            page.add(footer_group)
+
+        self.update_sensitivity()
+
+    def on_show_logs(self, btn):
+        log_win = Adw.Window(transient_for=self.win, title="TrashGuard Logs", modal=True)
+        log_win.set_default_size(600, 500)
+        
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        box.set_margin_top(15)
+        box.set_margin_bottom(15)
+        box.set_margin_start(15)
+        box.set_margin_end(15)
+        
+        stack = Adw.ViewStack()
+        
+        # Geänderte Logik für die Tab-Beschriftungen mit Übersetzungs-IDs
+        log_configs = [
+            (self._("log_daemon_title"), self.daemon_log),
+            (self._("log_cleaning_title"), self.cleaning_log)
+        ]
+        
+        for name, path in log_configs:
+            scr = Gtk.ScrolledWindow(vexpand=True)
+            txt = Gtk.TextView(editable=False, cursor_visible=False, left_margin=10, right_margin=10, top_margin=10, bottom_margin=10)
+            txt.set_monospace(True)
+            
+            content = ""
+            if os.path.exists(path):
+                try:
+                    with open(path, "r") as f: content = f.read()
+                except: content = "Fehler beim Lesen der Datei."
+            else:
+                content = "Bisher keine Einträge vorhanden."
+            
+            txt.get_buffer().set_text(content)
+            scr.set_child(txt)
+            stack.add_titled(scr, name, name)
+        
+        switcher = Adw.ViewSwitcher(stack=stack)
+        box.append(switcher)
+        box.append(stack)
+
+        # Der Schließen-Button nutzt jetzt die ID "btn_close"
+        close_btn = Gtk.Button(label=self._("btn_close"))
+        close_btn.set_halign(Gtk.Align.CENTER)
+        close_btn.add_css_class("suggested-action")
+        close_btn.set_margin_top(10)
+        close_btn.connect("clicked", lambda b: log_win.close())
+        box.append(close_btn)
+        
+        log_win.set_content(box)
+        log_win.present()
+
+    def on_daemon_toggled(self, row, pspec):
+        active = row.get_active()
+        self.on_config_changed()
+        autostart_dir = os.path.expanduser("~/.config/autostart")
+        autostart_file = os.path.join(autostart_dir, "com.dejanovic.trashguard.daemon.desktop")
+        daemon_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "TrashGuard.py")
+
+        if active:
+            os.makedirs(autostart_dir, exist_ok=True)
+            with open(autostart_file, "w") as f:
+                f.write(f"[Desktop Entry]\nType=Application\nName=TrashGuard Daemon\n"
+                        f"Exec=python3 {daemon_script}\n"
+                        f"Hidden=false\nNoDisplay=false\nX-GNOME-Autostart-enabled=true\n")
+            if not self.is_daemon_running() and os.path.exists(daemon_script):
+                proc = subprocess.Popen(["python3", daemon_script])
+                with open(self.pid_file, "w") as f: f.write(str(proc.pid))
+        else:
+            if os.path.exists(autostart_file): os.remove(autostart_file)
+            if os.path.exists(self.pid_file):
+                try:
+                    with open(self.pid_file, "r") as f: pid = int(f.read().strip())
+                    os.kill(pid, 15)
+                except: pass
+                finally:
+                    if os.path.exists(self.pid_file): os.remove(self.pid_file)
+
+    def show_about(self, btn):
+        dialog = Adw.MessageDialog(transient_for=self.win, heading=self._("legal_title"))
+        logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Slavic_by_nature.svg")
+        content_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
+        if os.path.exists(logo_path):
+            logo_img = Gtk.Image.new_from_file(logo_path)
+            logo_img.set_pixel_size(96)
+            content_box.append(logo_img)
+        label = Gtk.Label(use_markup=True, wrap=True, justify=Gtk.Justification.CENTER)
+        label.set_markup(f"<b>TrashGuard</b>\n\n{self._('legal_text')}")
+        content_box.append(label)
+        dialog.set_extra_child(content_box)
+        dialog.add_response("close", self._("btn_close"))
+        dialog.add_response("report", self._("btn_report"))
+        dialog.connect("response", lambda d, r: webbrowser.open("mailto:trashguard@alpenjodel.de") if r == "report" else None)
+        dialog.present()
+
+    def on_close_requested(self, win):
+        self.config["window_width"] = win.get_width()
+        self.config["window_height"] = win.get_height()
+        self.save_config()
+
+        if not self.service_switch.get_active():
+            diag = Adw.MessageDialog(transient_for=self.win, heading=self._("warn_title"), body=self._("warn_body"))
+            diag.add_response("cancel", self._("warn_cancel"))
+            diag.add_response("exit", self._("warn_confirm"))
+            diag.set_response_appearance("exit", Adw.ResponseAppearance.DESTRUCTIVE)
+            diag.connect("response", lambda d, r: self.quit() if r == "exit" else None)
+            diag.present()
+            return True
+        return False
+
+    def sync_from_gb(self, spin):
+        val = spin.get_value()
+        pct = (val / self.free_gb_now) * 100 if self.free_gb_now > 0 else 0
+        self.pct_scale.handler_block_by_func(self.sync_from_pct)
+        self.pct_scale.set_value(min(pct, 50))
+        self.pct_label.set_text(f"{int(self.pct_scale.get_value())}%")
+        self.pct_scale.handler_unblock_by_func(self.sync_from_pct)
+        self.on_config_changed()
+
+    def sync_from_pct(self, scale):
+        pct = scale.get_value()
+        val = (pct / 100) * self.free_gb_now
+        self.pct_label.set_text(f"{int(pct)}%")
+        self.gb_spin.handler_block_by_func(self.sync_from_gb)
+        self.gb_spin.set_value(val)
+        self.gb_spin.handler_unblock_by_func(self.sync_from_gb)
+        self.on_config_changed()
+
+    def on_mode_toggled(self, row, pspec, mode):
+        fixed_active = self.fixed_check_row.get_active()
+        dyn_active = self.dyn_check_row.get_active()
+
+        if not fixed_active and not dyn_active:
+            row.handler_block_by_func(self.on_mode_toggled)
+            row.set_active(True)
+            row.handler_unblock_by_func(self.on_mode_toggled)
+            return
+
+        if row.get_active():
+            if mode == "fixed":
+                self.dyn_check_row.set_active(False)
+            else:
+                self.fixed_check_row.set_active(False)
+        
+        GLib.idle_add(self.update_sensitivity)
+        self.on_config_changed()
+
+    def update_sensitivity(self):
+        fixed = self.fixed_check_row.get_active()
+        dyn = self.dyn_check_row.get_active()
+        self.fixed_val_row.set_sensitive(fixed)
+        self.dyn_val_row.set_sensitive(dyn)
+
+    def on_config_changed(self, *args):
+        langs = ["de", "en", "hr"]
+        self.config.update({
+            "service_enabled": self.service_switch.get_active(),
             "fixed_gb_val": round(self.gb_spin.get_value(), 2),
             "percent_val": int(self.pct_scale.get_value()),
-            "del_strategy_idx": self.strat_drop.get_selected(),
-            "language_code": self.settings.get("language_code", "de")
+            "interval_idx": self.interval_row.get_selected(),
+            "del_strategy_idx": self.strategy_row.get_selected(),
+            "use_fixed": self.fixed_check_row.get_active(),
+            "language": langs[self.lang_row.get_selected()]
         })
-        os.makedirs(os.path.dirname(self.settings_path), exist_ok=True)
-        with open(self.settings_path, "w", encoding="utf-8") as f:
-            json.dump(self.settings, f, indent=4, ensure_ascii=False)
+        self.save_config()
+
+    def on_language_changed(self, row, pspec):
+        self.on_config_changed(); self.update_translation(); GLib.idle_add(self.build_ui)
 
 if __name__ == "__main__":
     app = TrashGuardApp()

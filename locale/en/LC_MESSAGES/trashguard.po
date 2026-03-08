@@ -12,6 +12,9 @@ msgstr "Language"
 msgid "daemon_title"
 msgstr "Trash daemon active"
 
+msgid "help_daemon"
+msgstr "Enables the background service that automatically clears the trash based on your rules."
+
 msgid "limit_gb_title"
 msgstr "Limit (Fixed GB)"
 
@@ -23,15 +26,6 @@ msgstr "Check interval"
 
 msgid "strat_title"
 msgstr "Deletion priority"
-
-msgid "btn_log_title"
-msgstr "Show event log"
-
-msgid "restart_msg"
-msgstr "Please restart the program for the language change to take effect."
-
-msgid "daemon_warning"
-msgstr "Warning: The daemon is not active! Your trash will not be emptied automatically. Exit anyway?"
 
 msgid "info_title"
 msgstr "Information"
@@ -51,26 +45,47 @@ msgstr "Report a problem"
 msgid "help_lang"
 msgstr "Select your preferred language for the user interface."
 
-msgid "help_gb"
-msgstr "The trash will be emptied if it exceeds this fixed GB value."
+msgid "help_fixed_mode"
+msgstr "The trash is always cleared at the exact GB limit, regardless of other disk space."
 
-msgid "help_pct"
-msgstr "The trash will be emptied if it occupies this percentage of your disk."
+msgid "help_dynamic_mode"
+msgstr "The limit adjusts automatically. As your disk gets fuller, the allowed space for trash decreases."
 
 msgid "help_interval"
-msgstr "How often should the trash be checked in the background?"
+msgstr "How often should it check in the background if the trash is too full?"
 
 msgid "help_strat"
-msgstr "Decide whether to delete the oldest or the largest files first."
+msgstr "Decide whether the oldest or the largest files should be deleted first."
 
 msgid "warn_title"
-msgstr "Protection Disabled"
+msgstr "Protection disabled"
 
 msgid "warn_body"
-msgstr "The trash daemon is currently switched off. TrashGuard will not automatically clean up your storage. Do you still want to exit?"
+msgstr "The trash daemon is turned off. TrashGuard will not automatically clean your storage. Exit anyway?"
 
 msgid "warn_cancel"
 msgstr "Cancel"
 
 msgid "warn_confirm"
 msgstr "Exit"
+
+msgid "check_fixed_title"
+msgstr "Use fixed GB value"
+
+msgid "check_dynamic_title"
+msgstr "Dynamic percent limit"
+
+msgid "strat_oldest"
+msgstr "Oldest first"
+
+msgid "strat_biggest"
+msgstr "Biggest first"
+
+msgid "strat_random"
+msgstr "Random"
+
+msgid "log_daemon_title"
+msgstr "Daemon Status"
+
+msgid "log_cleaning_title"
+msgstr "Cleaning Log"

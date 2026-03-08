@@ -12,6 +12,9 @@ msgstr "Jezik"
 msgid "daemon_title"
 msgstr "Provjera koša aktivna"
 
+msgid "help_daemon"
+msgstr "Aktivira pozadinsku uslugu koja automatski prazni koš za smeće prema vašim pravilima."
+
 msgid "limit_gb_title"
 msgstr "Limit diska (GB)"
 
@@ -24,23 +27,14 @@ msgstr "Interval provjere"
 msgid "strat_title"
 msgstr "Prioritet brisanja"
 
-msgid "btn_log_title"
-msgstr "Otvori log događaja"
-
-msgid "restart_msg"
-msgstr "Molimo ponovno pokrenite program kako bi promjena jezika postala aktivna."
-
-msgid "daemon_warning"
-msgstr "Pažnja: Usluga nije aktivirana! Vaš koš se neće automatski prazniti. Ipak zatvoriti?"
-
 msgid "info_title"
 msgstr "Informacije"
 
 msgid "legal_title"
-msgstr "Pravna obavijest"
+msgstr "Pravna napomena"
 
 msgid "legal_text"
-msgstr "<span size='large' weight='bold'>Open Source Software</span>\n\nOvaj program je slobodan softver pod GPLv3 licencom.\nMože se dijeliti i modificirati.\n\nRazvio s ❤️ Mario Dejanović"
+msgstr "<span size='large' weight='bold'>Open Source Software</span>\n\nOvaj program je besplatan softver pod GPLv3 licencom.\nMože se dijeliti i mijenjati.\n\nRazvijeno s ❤️: Mario Dejanović"
 
 msgid "btn_close"
 msgstr "Zatvori"
@@ -51,26 +45,47 @@ msgstr "Prijavi problem"
 msgid "help_lang"
 msgstr "Odaberite željeni jezik za korisničko sučelje."
 
-msgid "help_gb"
-msgstr "Fiksna vrijednost u GB. Ako se ta vrijednost premaši, smeće će se isprazniti."
+msgid "help_fixed_mode"
+msgstr "Koš za smeće se uvijek prazni na točnoj granici u GB, bez obzira na ostali prostor na disku."
 
-msgid "help_pct"
-msgstr "Postotak diska koji mora ostati slobodan prije čišćenja."
+msgid "help_dynamic_mode"
+msgstr "Ograničenje se automatski prilagođava. Što je disk puniji, dopušteni prostor za smeće postaje manji."
 
 msgid "help_interval"
-msgstr "Koliko često provjeravati koš u pozadini?"
+msgstr "Koliko često treba provjeravati u pozadini je li koš prepun?"
 
 msgid "help_strat"
-msgstr "Odlučite hoće li se prvo brisati najstarije ili najveće datoteke."
+msgstr "Odlučite hoće li se prvo obrisati najstarije ili najveće datoteke."
 
 msgid "warn_title"
-msgstr "Zaštita je isključena"
+msgstr "Zaštita isključena"
 
 msgid "warn_body"
-msgstr "Servis za čišćenje je isključen. TrashGuard neće automatski čistiti vaš prostor. Ipak želite zatvoriti?"
+msgstr "Usluga koša je isključena. TrashGuard neće automatski čistiti vaš prostor. Ipak izaći?"
 
 msgid "warn_cancel"
 msgstr "Odustani"
 
 msgid "warn_confirm"
-msgstr "Zatvori"
+msgstr "Izađi"
+
+msgid "check_fixed_title"
+msgstr "Koristi fiksni GB limit"
+
+msgid "check_dynamic_title"
+msgstr "Dinamički postotni limit"
+
+msgid "strat_oldest"
+msgstr "Najstarije prvo"
+
+msgid "strat_biggest"
+msgstr "Najveće prvo"
+
+msgid "strat_random"
+msgstr "Nasumično"
+
+msgid "log_daemon_title"
+msgstr "Status Daemona"
+
+msgid "log_cleaning_title"
+msgstr "Zapisnik brisanja"
