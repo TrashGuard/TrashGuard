@@ -2,9 +2,35 @@
 <component type="desktop-application">
   <id>com.dejanovic.trashguard</id>
   <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
   <name>TrashGuard</name>
-  <summary>Halte deinen Papierkorb unter Kontrolle</summary>
+  <summary>Automatically manage your trash size</summary>
+  <summary xml:lang="de">Papierkorbgröße automatisch verwalten</summary>
+  <summary xml:lang="hr">Automatsko upravljanje veličinom smeća</summary>
+  <summary xml:lang="sr">Automatsko upravljanje veličinom smeća</summary>
+
   <description>
-    <p>TrashGuard überwacht deinen Papierkorb und löscht Dateien automatisch basierend auf Größe oder Alter.</p>
+    <p>
+      TrashGuard monitors your trash folder in the background and clears it automatically when it exceeds a certain size.
+    </p>
+    <p xml:lang="de">
+      TrashGuard überwacht deinen Papierkorb im Hintergrund und leert ihn automatisch, wenn er eine bestimmte Größe überschreitet.
+    </p>
+    <p xml:lang="hr">
+      TrashGuard prati vašu mapu sa smećem u pozadini i automatski je prazni kada premaši određenu veličinu.
+    </p>
+    <p xml:lang="sr">
+      TrashGuard prati vašu fasciklu sa smećem u pozadini i automatski je prazni kada premaši određenu veličinu.
+    </p>
   </description>
+
+  <launchable type="desktop-id">com.dejanovic.trashguard.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <caption>The main window of TrashGuard</caption>
+      <caption xml:lang="de">Das Hauptfenster von TrashGuard</caption>
+      <caption xml:lang="hr">Glavni prozor TrashGuarda</caption>
+    </screenshot>
+  </screenshots>
+  <content_rating type="oars-1.1" />
 </component>
