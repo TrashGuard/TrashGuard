@@ -1,10 +1,6 @@
+.flatpak-builder/
+build-dir/
+*.flatpak
 __pycache__/
 *.pyc
-.config/
-trashguard_daemon_log.txt
-trashguard_cleaning_log.txt
-daemon.pid
-daemon.lock
-config.json
-settings.json
-*.mo
+.directory
