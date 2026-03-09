@@ -33,4 +33,13 @@
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.1" />
+  <releases>
+    <release version="1.0.0" date="2026-03-09">
+      <description>
+        <p>Initial Flatpak release with GNOME 49 support.</p>
+        <p xml:lang="de">Erste Flatpak-Veröffentlichung mit Unterstützung für GNOME 49.</p>
+        <p xml:lang="hr">Prvo Flatpak izdanje s podrškom za GNOME 49.</p>
+      </description>
+    </release>
+  </releases>
 </component>
