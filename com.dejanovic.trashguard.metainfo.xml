@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.dejanovic.trashguard</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <name>TrashGuard</name>
+  <summary>Halte deinen Papierkorb unter Kontrolle</summary>
+  <description>
+    <p>TrashGuard überwacht deinen Papierkorb und löscht Dateien automatisch basierend auf Größe oder Alter.</p>
+  </description>
+</component>

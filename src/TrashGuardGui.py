@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
@@ -51,11 +52,14 @@ class TrashGuardApp(Adw.Application):
     def sync_daemon_status(self):
         should_run = self.config.get("service_enabled", False)
         is_running = self.is_daemon_running()
-        daemon_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "TrashGuard.py")
+        if os.path.exists("/app/bin/TrashGuard.py"):
+            daemon_script = "/app/bin/TrashGuard.py"
+        else:
+            daemon_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "TrashGuard.py")
         if should_run and not is_running and os.path.exists(daemon_script):
             try:
                 # Hier wurde das --daemon Flag hinzugefügt
-                proc = subprocess.Popen(["python3", daemon_script, "--daemon"])
+                proc = subprocess.Popen([sys.executable, daemon_script, "--daemon"])
                 with open(self.pid_file, "w") as f: f.write(str(proc.pid))
             except: pass
         elif not should_run and is_running:
@@ -72,12 +76,22 @@ class TrashGuardApp(Adw.Application):
     def update_translation(self):
         lang = self.config.get("language", "de")
         os.environ['LANGUAGE'] = lang
-        locale_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'locale')
+        
+        # Wechsle zwischen Flatpak-Pfad und lokalem Pfad
+        if os.path.exists("/app/share/locale"):
+            locale_dir = "/app/share/locale"
+        else:
+            locale_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'locale')
+            
         try:
+            # Wichtig für die korrekte Pfad-Bindung
+            gettext.bindtextdomain('trashguard', locale_dir)
             el = gettext.translation('trashguard', locale_dir, languages=[lang], fallback=True)
             el.install()
             self._ = el.gettext
-        except: self._ = lambda s: s
+        except Exception as e:
+            print(f"Übersetzungsfehler: {e}")
+            self._ = lambda s: s
 
     def get_trash_size(self):
         """Berechnet die aktuelle Größe des Papierkorbs in GB."""
@@ -284,7 +298,7 @@ class TrashGuardApp(Adw.Application):
             if not self.is_daemon_running() and os.path.exists(daemon_script):
                 try:
                     # HINZUGEFÜGT: Das "--daemon" Flag
-                    proc = subprocess.Popen(["python3", daemon_script, "--daemon"])
+                    proc = subprocess.Popen([sys.executable, daemon_script, "--daemon"])
                     with open(self.pid_file, "w") as f: 
                         f.write(str(proc.pid))
                 except Exception as e:

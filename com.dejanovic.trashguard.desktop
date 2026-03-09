@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=TrashGuard
+Comment=Automatisches Aufräumen des Papierkorbs
+Exec=trashguard
+Icon=com.dejanovic.trashguard
+Type=Application
+Categories=Utility;GNOME;GTK;
+Terminal=false
